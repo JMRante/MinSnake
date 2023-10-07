@@ -67,6 +67,7 @@ GamePhase GameState::move_snake(Direction direction) {
 
 			// Check if head is hitting a wall
 			if (get_level_tile(segment_position.first, segment_position.second) == Wall) {
+				phase = Lost;
 				return Lost;
 			}
 		} else {
@@ -76,6 +77,7 @@ GamePhase GameState::move_snake(Direction direction) {
 
 			// Check if head is hitting body segment
 			if (snake_positions[0] == segment_position) {
+				phase = Lost;
 				return Lost;
 			}
 		}
@@ -94,11 +96,28 @@ GamePhase GameState::move_snake(Direction direction) {
 			game_speed -= speed_increment;
 			snake_positions.push_back(last_segments_position);
 		} else {
+			phase = Won;
 			return Won;
 		}
 	}
 
 	return Play;
+}
+
+GamePhase GameState::get_game_phase() {
+	return phase;
+}
+
+SDL_Color GameState::get_background_color() {
+	return background_color;
+}
+
+SDL_Color GameState::get_wall_color() {
+	return wall_color;
+}
+
+SDL_Color GameState::get_fruit_color() {
+	return fruit_color;
 }
 
 int GameState::get_game_speed() {
