@@ -35,12 +35,17 @@ void render_circle(SDL_Renderer* renderer, int x, int y, int w, int h, int sides
 	SDL_RenderGeometry(renderer, nullptr, vertices.data(), (int)vertices.size(), nullptr, 0);
 }
 
-void render_wall(SDL_Renderer* renderer, int gridX, int gridY, SDL_Color color) {
+void render_background(SDL_Renderer* renderer, SDL_Color color) {
+	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+	SDL_RenderClear(renderer);
+}
+
+void render_wall(SDL_Renderer* renderer, int grid_x, int grid_y, SDL_Color color) {
 	const int PADDING = 2;
 
 	SDL_Rect rect;
-	rect.x = (gridX * TILE_WIDTH) + PADDING;
-	rect.y = (gridY * TILE_HEIGHT) + PADDING;
+	rect.x = (grid_x * TILE_WIDTH) + PADDING;
+	rect.y = (grid_y * TILE_HEIGHT) + PADDING;
 	rect.w = TILE_WIDTH - (PADDING * 2);
 	rect.h = TILE_HEIGHT - (PADDING * 2);
 
@@ -48,48 +53,50 @@ void render_wall(SDL_Renderer* renderer, int gridX, int gridY, SDL_Color color) 
 	SDL_RenderFillRect(renderer, &rect);
 }
 
-void render_snake_body(SDL_Renderer* renderer, int gridX, int gridY) {
+void render_snake_body(SDL_Renderer* renderer, int grid_x, int grid_y) {
 	const int PADDING = 2;
 
-	render_circle(renderer, (gridX * TILE_WIDTH) + PADDING, (gridY * TILE_HEIGHT) + PADDING, TILE_WIDTH - (PADDING * 2), TILE_HEIGHT - (PADDING * 2), 32, { 0, 204, 153, 255 });
+	render_circle(renderer, (grid_x * TILE_WIDTH) + PADDING, (grid_y * TILE_HEIGHT) + PADDING, TILE_WIDTH - (PADDING * 2), TILE_HEIGHT - (PADDING * 2), 32, { 0, 204, 153, 255 });
 }
 
-void render_snake_head(SDL_Renderer* renderer, int gridX, int gridY, Direction direction) {
-	render_snake_body(renderer, gridX, gridY);
+void render_snake_head(SDL_Renderer* renderer, int grid_x, int grid_y, Direction direction) {
+	render_snake_body(renderer, grid_x, grid_y);
 
 	const int PADDING = 8;
 	const int EYE_SIZE = 16;
 
 	switch (direction) {
 	case Right:
-		render_circle(renderer, ((gridX + 1) * TILE_WIDTH) - PADDING - EYE_SIZE, (gridY * TILE_HEIGHT) + PADDING, EYE_SIZE, EYE_SIZE, 20, { 26, 26, 26, 255 });
-		render_circle(renderer, ((gridX + 1) * TILE_WIDTH) - PADDING - EYE_SIZE, ((gridY + 1) * TILE_HEIGHT) - PADDING - EYE_SIZE, EYE_SIZE, EYE_SIZE, 8, { 26, 26, 26, 255 });
+		render_circle(renderer, ((grid_x + 1) * TILE_WIDTH) - PADDING - EYE_SIZE, (grid_y * TILE_HEIGHT) + PADDING, EYE_SIZE, EYE_SIZE, 20, { 26, 26, 26, 255 });
+		render_circle(renderer, ((grid_x + 1) * TILE_WIDTH) - PADDING - EYE_SIZE, ((grid_y + 1) * TILE_HEIGHT) - PADDING - EYE_SIZE, EYE_SIZE, EYE_SIZE, 8, { 26, 26, 26, 255 });
 		break;
 	case Up:
-		render_circle(renderer, ((gridX + 1) * TILE_WIDTH) - PADDING - EYE_SIZE, (gridY * TILE_HEIGHT) + PADDING, EYE_SIZE, EYE_SIZE, 20, { 26, 26, 26, 255 });
-		render_circle(renderer, (gridX * TILE_WIDTH) + PADDING, (gridY * TILE_HEIGHT) + PADDING, EYE_SIZE, EYE_SIZE, 8, { 26, 26, 26, 255 });
+		render_circle(renderer, ((grid_x + 1) * TILE_WIDTH) - PADDING - EYE_SIZE, (grid_y * TILE_HEIGHT) + PADDING, EYE_SIZE, EYE_SIZE, 20, { 26, 26, 26, 255 });
+		render_circle(renderer, (grid_x * TILE_WIDTH) + PADDING, (grid_y * TILE_HEIGHT) + PADDING, EYE_SIZE, EYE_SIZE, 8, { 26, 26, 26, 255 });
 		break;
 	case Left:
-		render_circle(renderer, (gridX * TILE_WIDTH) + PADDING, ((gridY + 1) * TILE_HEIGHT) - PADDING - EYE_SIZE, EYE_SIZE, EYE_SIZE, 20, { 26, 26, 26, 255 });
-		render_circle(renderer, (gridX * TILE_WIDTH) + PADDING, (gridY * TILE_HEIGHT) + PADDING, EYE_SIZE, EYE_SIZE, 8, { 26, 26, 26, 255 });
+		render_circle(renderer, (grid_x * TILE_WIDTH) + PADDING, ((grid_y + 1) * TILE_HEIGHT) - PADDING - EYE_SIZE, EYE_SIZE, EYE_SIZE, 20, { 26, 26, 26, 255 });
+		render_circle(renderer, (grid_x * TILE_WIDTH) + PADDING, (grid_y * TILE_HEIGHT) + PADDING, EYE_SIZE, EYE_SIZE, 8, { 26, 26, 26, 255 });
 		break;
 	case Down:
-		render_circle(renderer, (gridX * TILE_WIDTH) + PADDING, ((gridY + 1) * TILE_HEIGHT) - PADDING - EYE_SIZE, EYE_SIZE, EYE_SIZE, 20, { 26, 26, 26, 255 });
-		render_circle(renderer, ((gridX + 1) * TILE_WIDTH) - PADDING - EYE_SIZE, ((gridY + 1) * TILE_HEIGHT) - PADDING - EYE_SIZE, EYE_SIZE, EYE_SIZE, 8, { 26, 26, 26, 255 });
+		render_circle(renderer, (grid_x * TILE_WIDTH) + PADDING, ((grid_y + 1) * TILE_HEIGHT) - PADDING - EYE_SIZE, EYE_SIZE, EYE_SIZE, 20, { 26, 26, 26, 255 });
+		render_circle(renderer, ((grid_x + 1) * TILE_WIDTH) - PADDING - EYE_SIZE, ((grid_y + 1) * TILE_HEIGHT) - PADDING - EYE_SIZE, EYE_SIZE, EYE_SIZE, 8, { 26, 26, 26, 255 });
 		break;
 	}
 }
 
-void render_fruit(SDL_Renderer* renderer, int gridX, int gridY, SDL_Color color) {
+void render_fruit(SDL_Renderer* renderer, int grid_x, int grid_y, SDL_Color color) {
 	const int PADDING = 8;
 
-	render_circle(renderer, (gridX * TILE_WIDTH) + PADDING, (gridY * TILE_HEIGHT) + PADDING, TILE_WIDTH - (PADDING * 2), TILE_HEIGHT - (PADDING * 2), 24, { color.r, color.g, color.b, color.a });
+	render_circle(renderer, (grid_x * TILE_WIDTH) + PADDING, (grid_y * TILE_HEIGHT) + PADDING, TILE_WIDTH - (PADDING * 2), TILE_HEIGHT - (PADDING * 2), 24, { color.r, color.g, color.b, color.a });
 }
 
-void render(int level[15][20], SDL_Renderer* renderer) {
+void render(int game_state[15][20], SDL_Renderer* renderer) {
+	render_background(renderer, { 0, 0, 153, 255 });
+
 	for (int i = 0; i < 20; i++) {
 		for (int j = 0; j < 15; j++) {
-			switch (level[j][i]) {
+			switch (game_state[j][i]) {
 			case Blank: break;
 			case Wall:
 				render_wall(renderer, i, j, { 0, 153, 255, 255 });
@@ -116,6 +123,8 @@ void render(int level[15][20], SDL_Renderer* renderer) {
 			}
 		}
 	}
+
+	SDL_RenderPresent(renderer);
 }
 
 int main(int argc, char** args) {
@@ -160,8 +169,12 @@ int main(int argc, char** args) {
 
 	bool is_game_running = true;
 
+	int game_speed = 500;
+	int last_interval_time = game_speed + 1;
+
 	while (is_game_running) {
 		Uint32 ticks = SDL_GetTicks();
+		int interval_time = ticks % game_speed;
 
 		while (SDL_PollEvent(&event) != 0) {
 			switch (event.type) {
@@ -171,14 +184,11 @@ int main(int argc, char** args) {
 			}
 		}
 
-		if (ticks % 100 == 0) {
-			SDL_SetRenderDrawColor(renderer, 0, 0, 153, 255);
-			SDL_RenderClear(renderer);
-
+		if (interval_time < last_interval_time) {
 			render(level, renderer);
-
-			SDL_RenderPresent(renderer);
 		}
+
+		last_interval_time = interval_time;
 	}
 
 	SDL_DestroyWindow(window);
