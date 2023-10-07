@@ -2,14 +2,13 @@
 #include <vector>
 #include <SDL.h>
 #include <cmath>
+#include "gameEnums.h"
+#include "gameState.h"
 
 using namespace std;
 
 const int TILE_WIDTH = 50;
 const int TILE_HEIGHT = 50;
-
-enum Direction { Right, Up, Left, Down };
-enum GameTiles { Blank, Wall, Fruit, SnakeBody, SnakeHeadRight, SnakeHeadUp, SnakeHeadLeft, SnakeHeadDown };
 
 void render_circle(SDL_Renderer* renderer, int x, int y, int w, int h, int sides, SDL_Color color) {
 	vector<SDL_Vertex> vertices;
@@ -91,12 +90,12 @@ void render_fruit(SDL_Renderer* renderer, int grid_x, int grid_y, SDL_Color colo
 	render_circle(renderer, (grid_x * TILE_WIDTH) + PADDING, (grid_y * TILE_HEIGHT) + PADDING, TILE_WIDTH - (PADDING * 2), TILE_HEIGHT - (PADDING * 2), 24, { color.r, color.g, color.b, color.a });
 }
 
-void render(int game_state[15][20], SDL_Renderer* renderer) {
+void render(GameState game_state, SDL_Renderer* renderer) {
 	render_background(renderer, { 0, 0, 153, 255 });
 
-	for (int i = 0; i < 20; i++) {
-		for (int j = 0; j < 15; j++) {
-			switch (game_state[j][i]) {
+	for (int i = 0; i < LEVELS_WIDTH; i++) {
+		for (int j = 0; j < LEVELS_HEIGHT; j++) {
+			switch (game_state.get_level_tile(i, j)) {
 			case Blank: break;
 			case Wall:
 				render_wall(renderer, i, j, { 0, 153, 255, 255 });
@@ -133,7 +132,7 @@ int main(int argc, char** args) {
 		return 1;
 	}
 
-	SDL_Window* window = SDL_CreateWindow("MinSnake", 100, 100, 20 * TILE_WIDTH, 15 * TILE_HEIGHT, SDL_WINDOW_SHOWN);
+	SDL_Window* window = SDL_CreateWindow("MinSnake", 100, 100, LEVELS_WIDTH * TILE_WIDTH, LEVELS_HEIGHT * TILE_HEIGHT, SDL_WINDOW_SHOWN);
 
 	if (!window) {
 		cout << "Failed to create window: " << SDL_GetError() << "\n";
@@ -147,22 +146,33 @@ int main(int argc, char** args) {
 		return 1;
 	}
 
-	int level[15][20] = {
-		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,1,1,1,0,0,0,0,0,0,0,1,1,0,0,0,1,
-		1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,
-		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
-		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,
-		1,0,0,0,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,1,
-		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	GameState level = {
+		{
+			1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+			1,0,0,0,1,1,1,0,0,0,0,0,0,0,1,1,0,0,0,1,
+			1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,
+			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+			1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+			1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,
+			1,0,0,0,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,1,
+			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+			1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+		},
+		500,
+		10,
+		10,
+		{
+			{ 10, 9 },
+			{ 9, 9 },
+			{ 8, 9 }
+		},
+		Right
 	};
 
 	SDL_Event event;
