@@ -13,34 +13,41 @@ void GameState::place_new_fruit() {
 	int x = 0;
 	int y = 0;
 
-	for (int tile : level) {
-		// Check if tile is blank, not on a snake segment, and far enough from the head
-		if (tile == Blank) {
-			bool overlaps_snake = false;
+	for (int x = 0; x < LEVELS_WIDTH; x++) {
+		for (int y = 0; y < LEVELS_HEIGHT; y++) {
+			GameTile tile = get_level_tile(x, y);
 
-			for (pair<int, int> segment_position : snake_positions) {
-				if (segment_position.first == x && segment_position.second == y) {
-					overlaps_snake = true;
-					break;
+			// Check if tile is blank, not on a snake segment, and far enough from the head
+			if (tile == Blank) {
+				bool overlaps_snake = false;
+
+				for (pair<int, int> segment_position : snake_positions) {
+					if (segment_position.first == x && segment_position.second == y) {
+						overlaps_snake = true;
+						break;
+					}
 				}
+
+				if (!overlaps_snake) {
+					int x_distance_to_head = abs(snake_positions[0].first - x);
+					int y_distance_to_head = abs(snake_positions[0].second - y);
+
+					if (x_distance_to_head > 4 && y_distance_to_head > 4) {
+						valid_fruit_positions.push_back({ x, y });
+					}
+				}
+
+				valid_fruit_positions.push_back({ x, y });
 			}
 
-			if (!overlaps_snake) {
-				int x_distance_to_head = abs(snake_positions[0].first - x);
-				int y_distance_to_head = abs(snake_positions[0].second - y);
-
-				if (x_distance_to_head > 4 && y_distance_to_head > 4) {
-					valid_fruit_positions.push_back({ x, y });
-				}
+			// Calculate next tile position
+			if (x < LEVELS_WIDTH) {
+				x++;
 			}
-		}
-
-		// Calculate next tile position
-		if (x < LEVELS_WIDTH) {
-			x++;
-		} else {
-			x = 0;
-			y++;
+			else {
+				x = 0;
+				y++;
+			}
 		}
 	}
 
@@ -53,7 +60,8 @@ void GameState::place_new_fruit() {
 }
 
 void GameState::set_snake_direction(Direction direction) {
-	if ((direction == Right && snake_direction == Left) ||
+	if (phase == Lost || phase == Won ||
+		(direction == Right && snake_direction == Left) ||
 		(direction == Left && snake_direction == Right) ||
 		(direction == Up && snake_direction == Down) ||
 		(direction == Down && snake_direction == Up)) {
@@ -64,6 +72,10 @@ void GameState::set_snake_direction(Direction direction) {
 }
 
 GamePhase GameState::move_snake() {
+	if (phase == Lost || phase == Won) {
+		return phase;
+	}
+
 	pair<int, int> last_segments_position = { -1, -1 };
 
 	for (pair<int, int> &segment_position : snake_positions) {
@@ -81,7 +93,6 @@ GamePhase GameState::move_snake() {
 			// Check if head is hitting a wall
 			if (get_level_tile(segment_position.first, segment_position.second) == Wall) {
 				phase = Lost;
-				return Lost;
 			}
 		} else {
 			pair<int, int> temp_segment_position = segment_position;
@@ -95,7 +106,6 @@ GamePhase GameState::move_snake() {
 			// Check if head is hitting body segment
 			if (snake_positions[0] == segment_position) {
 				phase = Lost;
-				return Lost;
 			}
 		}
 	}
@@ -112,11 +122,10 @@ GamePhase GameState::move_snake() {
 			snake_positions.push_back(last_segments_position);
 		} else {
 			phase = Won;
-			return Won;
 		}
 	}
 
-	return Play;
+	return phase;
 }
 
 GamePhase GameState::get_game_phase() {
