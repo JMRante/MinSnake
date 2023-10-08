@@ -68,6 +68,8 @@ GamePhase GameState::move_snake() {
 
 	for (pair<int, int> &segment_position : snake_positions) {
 		if (last_segments_position == make_pair(-1, -1)) {
+			last_segments_position = segment_position;
+
 			// Move head in new direction
 			switch (snake_direction) {
 			case Right: segment_position.first = segment_position.first + 1; break;
@@ -82,9 +84,13 @@ GamePhase GameState::move_snake() {
 				return Lost;
 			}
 		} else {
+			pair<int, int> temp_segment_position = segment_position;
+
 			// Move body segment to position of the segment ahead of it
 			segment_position.first = last_segments_position.first;
 			segment_position.second = last_segments_position.second;
+
+			last_segments_position = temp_segment_position;
 
 			// Check if head is hitting body segment
 			if (snake_positions[0] == segment_position) {
@@ -92,8 +98,6 @@ GamePhase GameState::move_snake() {
 				return Lost;
 			}
 		}
-
-		last_segments_position = segment_position;
 	}
 
 	// Check if head is touching fruit

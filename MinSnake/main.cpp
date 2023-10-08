@@ -51,7 +51,7 @@ int main(int argc, char** args) {
 		{ 0, 0, 153, 255 },
 		{ 51, 102, 255, 255 },
 		{ 255, 0, 102, 255 },
-		500,
+		300,
 		10,
 		10,
 		{
@@ -72,6 +72,8 @@ int main(int argc, char** args) {
 
 	int game_speed = state.get_game_speed();
 	int last_interval_time = game_speed + 1;
+
+	state.place_new_fruit();
 
 	while (is_game_running) {
 		Uint32 ticks = SDL_GetTicks();
