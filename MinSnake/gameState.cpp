@@ -1,8 +1,6 @@
 #include <vector>
 #include <utility>
 #include <random>
-#include <string>
-#include <iostream>
 #include "gameState.h"
 
 void GameState::reload_from_state(GameState* other_state) {
@@ -75,8 +73,6 @@ void GameState::place_new_fruit() {
 	random_device device;
 	mt19937 random_generator(device());
 	uniform_int_distribution<mt19937::result_type> position_distribution(1, (int)valid_fruit_positions.size());
-
-	cout << "Valid positions " << to_string((int)valid_fruit_positions.size()) << endl;
 
 	fruit_position = valid_fruit_positions[position_distribution(random_generator)];
 }
