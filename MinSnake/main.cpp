@@ -107,9 +107,11 @@ int main(int argc, char** args) {
 			state.move_snake();
 			game_renderer.render(&state);
 			game_speed = state.get_game_speed();
-		}
 
-		last_interval_time = interval_time;
+			last_interval_time = 0;
+		} else {
+			last_interval_time = interval_time;
+		}
 	}
 
 	SDL_DestroyWindow(window);
