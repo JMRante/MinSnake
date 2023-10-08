@@ -12,6 +12,7 @@ const int LEVELS_HEIGHT = 15;
 class GameState
 {
 public:
+	GameState() {};
 	GameState(vector<int> level, SDL_Color background_color, SDL_Color wall_color, SDL_Color fruit_color, int start_speed, int speed_increment, int fruit_goal, vector<pair<int, int>> snake_positions, Direction snake_direction) :
 		level(level), 
 		background_color(background_color),
@@ -28,22 +29,7 @@ public:
 		fruit_position = { 0, 0 };
 	};
 	~GameState() {};
-	GameState(const GameState& rhs) { 
-		level = rhs.level;
-		phase = rhs.phase;
-		background_color = rhs.background_color;
-		wall_color = rhs.wall_color;
-		fruit_color = rhs.fruit_color;
-		start_speed = rhs.start_speed;
-		speed_increment = rhs.speed_increment;
-		game_speed = rhs.game_speed;
-		fruits_eaten = rhs.fruits_eaten;
-		fruit_goal = rhs.fruit_goal;
-		fruit_position = rhs.fruit_position;
-		snake_positions = rhs.snake_positions;
-		snake_direction = rhs.snake_direction;
-	}
-	GameState& operator=(const GameState& rhs) {};
+	void reload_from_state(GameState* other_state);
 	GameTile get_level_tile(int x, int y);
 	void place_new_fruit();
 	GamePhase move_snake();

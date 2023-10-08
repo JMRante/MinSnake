@@ -62,7 +62,8 @@ int main(int argc, char** args) {
 		Right
 	};
 
-	GameState state = level;
+	GameState state;
+	state.reload_from_state(&level);
 
 	SDL_Event event;
 
@@ -72,8 +73,6 @@ int main(int argc, char** args) {
 
 	int game_speed = state.get_game_speed();
 	int last_interval_time = game_speed + 1;
-
-	state.place_new_fruit();
 
 	while (is_game_running) {
 		Uint32 ticks = SDL_GetTicks();
@@ -85,19 +84,23 @@ int main(int argc, char** args) {
 				is_game_running = false;
 				break;
 			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym) {
-				case SDLK_RIGHT:
-					last_input_direction = Right;
-					break;
-				case SDLK_UP:
-					last_input_direction = Up;
-					break;
-				case SDLK_LEFT:
-					last_input_direction = Left;
-					break;
-				case SDLK_DOWN:
-					last_input_direction = Down;
-					break;
+				if (state.get_game_phase() == Lost) {
+					state.reload_from_state(&level);
+				} else {
+					switch (event.key.keysym.sym) {
+					case SDLK_RIGHT:
+						last_input_direction = Right;
+						break;
+					case SDLK_UP:
+						last_input_direction = Up;
+						break;
+					case SDLK_LEFT:
+						last_input_direction = Left;
+						break;
+					case SDLK_DOWN:
+						last_input_direction = Down;
+						break;
+					}
 				}
 			}
 		}

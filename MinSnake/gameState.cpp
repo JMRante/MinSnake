@@ -1,7 +1,27 @@
 #include <vector>
 #include <utility>
 #include <random>
+#include <string>
+#include <iostream>
 #include "gameState.h"
+
+void GameState::reload_from_state(GameState* other_state) {
+	level = other_state->level;
+	phase = other_state->phase;
+	background_color = other_state->background_color;
+	wall_color = other_state->wall_color;
+	fruit_color = other_state->fruit_color;
+	start_speed = other_state->start_speed;
+	speed_increment = other_state->speed_increment;
+	game_speed = other_state->game_speed;
+	fruits_eaten = other_state->fruits_eaten;
+	fruit_goal = other_state->fruit_goal;
+	fruit_position = other_state->fruit_position;
+	snake_positions = other_state->snake_positions;
+	snake_direction = other_state->snake_direction;
+
+	place_new_fruit();
+}
 
 GameTile GameState::get_level_tile(int x, int y) {
 	return (GameTile)level[x + (y * LEVELS_WIDTH)];
@@ -55,6 +75,8 @@ void GameState::place_new_fruit() {
 	random_device device;
 	mt19937 random_generator(device());
 	uniform_int_distribution<mt19937::result_type> position_distribution(1, (int)valid_fruit_positions.size());
+
+	cout << "Valid positions " << to_string((int)valid_fruit_positions.size()) << endl;
 
 	fruit_position = valid_fruit_positions[position_distribution(random_generator)];
 }
