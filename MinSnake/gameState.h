@@ -31,6 +31,9 @@ public:
 	GameState(const GameState& rhs) { 
 		level = rhs.level;
 		phase = rhs.phase;
+		background_color = rhs.background_color;
+		wall_color = rhs.wall_color;
+		fruit_color = rhs.fruit_color;
 		start_speed = rhs.start_speed;
 		speed_increment = rhs.speed_increment;
 		game_speed = rhs.game_speed;
@@ -43,12 +46,16 @@ public:
 	GameState& operator=(const GameState& rhs) {};
 	GameTile get_level_tile(int x, int y);
 	void place_new_fruit();
-	GamePhase move_snake(Direction direction);
+	GamePhase move_snake();
 	GamePhase get_game_phase();
 	SDL_Color get_background_color();
 	SDL_Color get_wall_color();
 	SDL_Color get_fruit_color();
 	int get_game_speed();
+	pair<int, int> get_fruit_position();
+	vector<pair<int, int>>* get_snake_positions();
+	void set_snake_direction(Direction direction);
+	Direction get_snake_direction();
 private:
 	vector<int> level;
 	GamePhase phase;

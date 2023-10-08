@@ -11,6 +11,7 @@ void GameRenderer::render(GameState* game_state) {
 	default: snake_body_color = SNAKE_BODY_COLOR; break;
 	}
 
+	// Render level
 	for (int i = 0; i < LEVELS_WIDTH; i++) {
 		for (int j = 0; j < LEVELS_HEIGHT; j++) {
 			switch (game_state->get_level_tile(i, j)) {
@@ -18,26 +19,23 @@ void GameRenderer::render(GameState* game_state) {
 			case Wall:
 				render_wall(i, j, game_state->get_wall_color());
 				break;
-			case Fruit:
-				render_fruit(i, j, game_state->get_fruit_color());
-				break;
-			case SnakeBody:
-				render_snake_body(i, j, snake_body_color);
-				break;
-			case SnakeHeadRight:
-				render_snake_head(i, j, Right, snake_body_color, SNAKE_EYE_COLOR);
-				break;
-			case SnakeHeadUp:
-				render_snake_head(i, j, Up, snake_body_color, SNAKE_EYE_COLOR);
-				break;
-			case SnakeHeadLeft:
-				render_snake_head(i, j, Left, snake_body_color, SNAKE_EYE_COLOR);
-				break;
-			case SnakeHeadDown:
-				render_snake_head(i, j, Down, snake_body_color, SNAKE_EYE_COLOR);
-				break;
 			default: break;
 			}
+		}
+	}
+
+	// Render Fruit
+	render_fruit(game_state->get_fruit_position().first, game_state->get_fruit_position().second, game_state->get_fruit_color());
+
+	// Render snake
+	bool is_first_segment = true;
+
+	for (const pair<int, int> segment : *game_state->get_snake_positions()) {
+		if (is_first_segment) {
+			render_snake_head(segment.first, segment.second, game_state->get_snake_direction(), snake_body_color, SNAKE_EYE_COLOR);
+			is_first_segment = false;
+		} else {
+			render_snake_body(segment.first, segment.second, snake_body_color);
 		}
 	}
 

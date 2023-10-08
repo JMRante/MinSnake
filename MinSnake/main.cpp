@@ -62,11 +62,15 @@ int main(int argc, char** args) {
 		Right
 	};
 
+	GameState state = level;
+
 	SDL_Event event;
 
 	bool is_game_running = true;
 
-	int game_speed = 500;
+	Direction last_input_direction = state.get_snake_direction();
+
+	int game_speed = state.get_game_speed();
 	int last_interval_time = game_speed + 1;
 
 	while (is_game_running) {
@@ -78,11 +82,29 @@ int main(int argc, char** args) {
 			case SDL_QUIT:
 				is_game_running = false;
 				break;
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym) {
+				case SDLK_RIGHT:
+					last_input_direction = Right;
+					break;
+				case SDLK_UP:
+					last_input_direction = Up;
+					break;
+				case SDLK_LEFT:
+					last_input_direction = Left;
+					break;
+				case SDLK_DOWN:
+					last_input_direction = Down;
+					break;
+				}
 			}
 		}
 
 		if (interval_time < last_interval_time) {
-			game_renderer.render(&level);
+			state.set_snake_direction(last_input_direction);
+			state.move_snake();
+			game_renderer.render(&state);
+			game_speed = state.get_game_speed();
 		}
 
 		last_interval_time = interval_time;

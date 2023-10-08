@@ -52,13 +52,24 @@ void GameState::place_new_fruit() {
 	fruit_position = valid_fruit_positions[position_distribution(random_generator)];
 }
 
-GamePhase GameState::move_snake(Direction direction) {
+void GameState::set_snake_direction(Direction direction) {
+	if ((direction == Right && snake_direction == Left) ||
+		(direction == Left && snake_direction == Right) ||
+		(direction == Up && snake_direction == Down) ||
+		(direction == Down && snake_direction == Up)) {
+		return;
+	}
+
+	snake_direction = direction;
+}
+
+GamePhase GameState::move_snake() {
 	pair<int, int> last_segments_position = { -1, -1 };
 
 	for (pair<int, int> &segment_position : snake_positions) {
 		if (last_segments_position == make_pair(-1, -1)) {
 			// Move head in new direction
-			switch (direction) {
+			switch (snake_direction) {
 			case Right: segment_position.first = segment_position.first + 1; break;
 			case Up: segment_position.second = segment_position.second - 1; break;
 			case Left: segment_position.first = segment_position.first - 1; break;
@@ -122,4 +133,16 @@ SDL_Color GameState::get_fruit_color() {
 
 int GameState::get_game_speed() {
 	return game_speed;
+}
+
+pair<int, int> GameState::get_fruit_position() {
+	return fruit_position;
+}
+
+vector<pair<int, int>>* GameState::get_snake_positions() {
+	return &snake_positions;
+}
+
+Direction GameState::get_snake_direction() {
+	return snake_direction;
 }
