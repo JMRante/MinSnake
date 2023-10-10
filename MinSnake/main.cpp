@@ -45,7 +45,7 @@ int main(int argc, char** args) {
 	int last_time = 0;
 	int delta_time = 0;
 
-	int moveTimer = state.get_game_speed();
+	int move_timer = state.get_game_speed();
 
 	while (is_game_running) {
 		Uint32 ticks = SDL_GetTicks();
@@ -60,6 +60,7 @@ int main(int argc, char** args) {
 			case SDL_KEYDOWN:
 				if (state.get_game_phase() == Lost) {
 					state.reload_from_state(&levels[current_level]);
+					last_input_direction = state.get_snake_direction();
 				} else if (state.get_game_phase() == Won) {
 					if (current_level < levels.size() - 1) {
 						current_level++;
@@ -68,6 +69,7 @@ int main(int argc, char** args) {
 					}
 
 					state.reload_from_state(&levels[current_level]);
+					last_input_direction = state.get_snake_direction();
 				} else {
 					switch (event.key.keysym.sym) {
 					case SDLK_RIGHT:
@@ -87,18 +89,18 @@ int main(int argc, char** args) {
 			}
 		}
 
-		if (moveTimer == 0) {
+		if (move_timer == 0) {
 			state.set_snake_direction(last_input_direction);
 			state.move_snake();
 			game_renderer.render(&state);
 
-			moveTimer = state.get_game_speed();
+			move_timer = state.get_game_speed();
 		}
 
-		moveTimer -= delta_time;
+		move_timer -= delta_time;
 
-		if (moveTimer < 0) {
-			moveTimer = 0;
+		if (move_timer < 0) {
+			move_timer = 0;
 		}
 	}
 
