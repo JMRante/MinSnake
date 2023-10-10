@@ -42,12 +42,15 @@ int main(int argc, char** args) {
 
 	Direction last_input_direction = state.get_snake_direction();
 
-	int game_speed = state.get_game_speed();
-	int last_interval_time = game_speed + 1;
+	int last_time = 0;
+	int delta_time = 0;
+
+	int moveTimer = state.get_game_speed();
 
 	while (is_game_running) {
 		Uint32 ticks = SDL_GetTicks();
-		int interval_time = ticks % game_speed;
+		delta_time = ticks - last_time;
+		last_time = ticks;
 
 		while (SDL_PollEvent(&event) != 0) {
 			switch (event.type) {
@@ -84,15 +87,18 @@ int main(int argc, char** args) {
 			}
 		}
 
-		if (interval_time < last_interval_time) {
+		if (moveTimer == 0) {
 			state.set_snake_direction(last_input_direction);
 			state.move_snake();
 			game_renderer.render(&state);
-			game_speed = state.get_game_speed();
 
-			last_interval_time = 0;
-		} else {
-			last_interval_time = interval_time;
+			moveTimer = state.get_game_speed();
+		}
+
+		moveTimer -= delta_time;
+
+		if (moveTimer < 0) {
+			moveTimer = 0;
 		}
 	}
 
