@@ -28,13 +28,15 @@ void GameRenderer::render(GameState* game_state) {
 	render_fruit(game_state->get_fruit_position().first, game_state->get_fruit_position().second, game_state->get_fruit_color());
 
 	// Render snake
-	bool is_first_segment = true;
+	vector<pair<int, int>> segments = *game_state->get_snake_positions();
 
-	for (const pair<int, int> segment : *game_state->get_snake_positions()) {
-		if (is_first_segment) {
+	for (int i = segments.size() - 1; i >= 0; i--) {
+		pair<int, int> segment = segments[i];
+
+		if (i == 0) {
 			render_snake_head(segment.first, segment.second, game_state->get_snake_direction(), snake_body_color, SNAKE_EYE_COLOR);
-			is_first_segment = false;
-		} else {
+		}
+		else {
 			render_snake_body(segment.first, segment.second, snake_body_color);
 		}
 	}
