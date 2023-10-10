@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameEnums.h" />
+    <ClInclude Include="gameLevels.h" />
     <ClInclude Include="gameRenderer.h" />
     <ClInclude Include="gameState.h" />
   </ItemGroup>

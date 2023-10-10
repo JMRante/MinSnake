@@ -5,6 +5,7 @@
 #include "gameEnums.h"
 #include "gameState.h"
 #include "gameRenderer.h"
+#include "gameLevels.h"
 
 using namespace std;
 
@@ -30,40 +31,10 @@ int main(int argc, char** args) {
 
 	GameRenderer game_renderer(sdl_renderer);
 
-	GameState level = {
-		{
-			1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-			1,0,0,0,1,1,1,0,0,0,0,0,0,0,1,1,0,0,0,1,
-			1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,
-			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
-			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-			1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-			1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,
-			1,0,0,0,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,1,
-			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-			1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-			1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-		},
-		{ 0, 0, 153, 255 },
-		{ 51, 102, 255, 255 },
-		{ 255, 0, 102, 255 },
-		300,
-		10,
-		10,
-		{
-			{ 10, 9 },
-			{ 9, 9 },
-			{ 8, 9 }
-		},
-		Right
-	};
+	int current_level = 0;
 
 	GameState state;
-	state.reload_from_state(&level);
+	state.reload_from_state(&levels[current_level]);
 
 	SDL_Event event;
 
@@ -85,7 +56,15 @@ int main(int argc, char** args) {
 				break;
 			case SDL_KEYDOWN:
 				if (state.get_game_phase() == Lost) {
-					state.reload_from_state(&level);
+					state.reload_from_state(&levels[current_level]);
+				} else if (state.get_game_phase() == Won) {
+					if (current_level < levels.size() - 1) {
+						current_level++;
+					} else {
+						current_level = 0;
+					}
+
+					state.reload_from_state(&levels[current_level]);
 				} else {
 					switch (event.key.keysym.sym) {
 					case SDLK_RIGHT:
