@@ -54,8 +54,6 @@ void GameState::place_new_fruit() {
 						valid_fruit_positions.push_back({ x, y });
 					}
 				}
-
-				valid_fruit_positions.push_back({ x, y });
 			}
 
 			// Calculate next tile position
@@ -74,7 +72,7 @@ void GameState::place_new_fruit() {
 	mt19937 random_generator(device());
 	uniform_int_distribution<mt19937::result_type> position_distribution(1, (int)valid_fruit_positions.size());
 
-	fruit_position = valid_fruit_positions[position_distribution(random_generator)];
+	fruit_position = valid_fruit_positions[position_distribution(random_generator) - 1];
 }
 
 void GameState::set_snake_direction(Direction direction) {
