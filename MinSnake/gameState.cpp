@@ -50,7 +50,7 @@ void GameState::place_new_fruit() {
 					int x_distance_to_head = abs(snake_positions[0].first - x);
 					int y_distance_to_head = abs(snake_positions[0].second - y);
 
-					if (x_distance_to_head > 4 && y_distance_to_head > 4) {
+					if (x_distance_to_head > 4 || y_distance_to_head > 4) {
 						valid_fruit_positions.push_back({ x, y });
 					}
 				}
